@@ -73,7 +73,7 @@
 
 
     <!-- 게시글 리스트 조회 -->
-    <select id="findAll" resultType="com.study.domain.post.PostResponse">
+    <select id="findAll" parameterType="com.study.common.dto.SearchDto" resultType="com.study.domain.post.PostResponse">
         SELECT
             <include refid="postColumns" />
         FROM
@@ -82,6 +82,19 @@
             delete_yn = 0
         ORDER BY
             id DESC
+        <!--LIMIT #{offset}, #{recordSize} --> <!-- 조회할 데이터의 시작 위치, 시작 위치(offset)를 기준으로 조회할 데이터의 개수 -->
+        LIMIT #{pagination.limitStart}, #{recordSize}
+    </select>
+
+
+    <!-- 게시글 수 카운팅 -->
+    <select id="count" parameterType="com.study.common.dto.SearchDto" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_post
+        WHERE
+            delete_yn = 0
     </select>
 
 </mapper>
