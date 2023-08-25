@@ -16,7 +16,6 @@
         , modified_date
     </sql>
 
-
     <!-- 게시글 저장 -->
 <!--    <insert id="save" parameterType="com.study.domain.post.PostRequest">-->
     <!-- useGeneratedKeys 옵션을 true로 설정하면 생성된 게시글의 PK가 parameterType에 선언된 요청 객체(params)에 저장되며, keyProperty에 선언된 id에 값이 매핑(바인딩)됩니다. -->
@@ -36,7 +35,6 @@
         )
     </insert>
 
-
     <!-- 게시글 상세정보 조회 -->
     <select id="findById" parameterType="long" resultType="com.study.domain.post.PostResponse">
         SELECT
@@ -46,7 +44,6 @@
         WHERE
             id = #{value}
     </select>
-
 
     <!-- 게시글 수정 -->
     <update id="update" parameterType="com.study.domain.post.PostRequest">
@@ -61,7 +58,6 @@
             id = #{id}
     </update>
 
-
     <!-- 게시글 삭제 -->
     <delete id="deleteById" parameterType="long">
         UPDATE tb_post
@@ -71,7 +67,6 @@
             id = #{id}
     </delete>
 
-
     <!-- 게시글 리스트 조회 -->
     <select id="findAll" parameterType="com.study.common.dto.SearchDto" resultType="com.study.domain.post.PostResponse">
         SELECT
@@ -80,12 +75,12 @@
             tb_post
         WHERE
             delete_yn = 0
+            <include refid="search" />
         ORDER BY
             id DESC
         <!--LIMIT #{offset}, #{recordSize} --> <!-- 조회할 데이터의 시작 위치, 시작 위치(offset)를 기준으로 조회할 데이터의 개수 -->
         LIMIT #{pagination.limitStart}, #{recordSize}
     </select>
-
 
     <!-- 게시글 수 카운팅 -->
     <select id="count" parameterType="com.study.common.dto.SearchDto" resultType="int">
@@ -95,6 +90,39 @@
             tb_post
         WHERE
             delete_yn = 0
+            <include refid="search" />
     </select>
+
+    <!-- 게시글 검색 -->
+    <sql id="search">
+        <!-- 검색 키워드가 있을 때 -->
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <!-- 검색 유형이 있을 때 -->
+                <when test="searchType != null and searchType != ''">
+                    <choose>
+                        <when test="'title'.equals( searchType )">
+                            AND title LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="'content'.equals( searchType )">
+                            AND content LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="'writer'.equals( searchType )">
+                            AND writer LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                    </choose>
+                </when>
+
+                <!-- 전체 검색일 때 -->
+                <otherwise>
+                    AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                    OR writer LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
 
 </mapper>

@@ -2,12 +2,15 @@ package com.study.domain.post;
 
 import com.study.common.dto.MessageDto;
 import com.study.common.dto.SearchDto;
+import com.study.common.paging.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller //controller임을 명시
 @RequiredArgsConstructor
@@ -44,8 +47,8 @@ public class PostController {
     // 게시글 리스트 페이지
     @GetMapping("/post/list.do")
     public String openPostList(@ModelAttribute("params") final SearchDto params, Model model) {
-        List<PostResponse> posts = postService.findAllPost(params);
-        model.addAttribute("posts", posts);
+        PagingResponse<PostResponse> response = postService.findAllPost(params);
+        model.addAttribute("response", response);
         return "post/list";
     }
 
@@ -72,19 +75,11 @@ public class PostController {
         return showMessageAndRedirect(message, model);
     }
 
-//    // 게시글 삭제
-//    //물리적인 삭제가 아닌 삭제 여부(delete_yn)컬럼의 값을 변경하는 논리 삭제
-//    @PostMapping("/post/delete.do")
-//    public String deletePost(@RequestParam final Long id) {
-//        postService.deletePost(id);
-//        return "redirect:/post/list.do"; //삭제 후 리스트 페이지로
-//    }
-
     // 게시글 삭제
     @PostMapping("/post/delete.do")
-    public String deletePost(@RequestParam final Long id, Model model) {
+    public String deletePost(@RequestParam final Long id, final SearchDto queryParams, Model model) {
         postService.deletePost(id);
-        MessageDto message = new MessageDto("게시글 삭제가 완료되었습니다.", "/post/list.do", RequestMethod.GET, null);
+        MessageDto message = new MessageDto("게시글 삭제가 완료되었습니다.", "/post/list.do", RequestMethod.GET, queryParamsToMap(queryParams));
         return showMessageAndRedirect(message, model);
     }
 
@@ -92,6 +87,17 @@ public class PostController {
     private String showMessageAndRedirect(final MessageDto params, Model model) {
         model.addAttribute("params", params);
         return "common/messageRedirect";
+    }
+
+    // 쿼리 스트링 파라미터를 Map에 담아 반환
+    private Map<String, Object> queryParamsToMap(final SearchDto queryParams) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("page", queryParams.getPage());
+        data.put("recordSize", queryParams.getRecordSize());
+        data.put("pageSize", queryParams.getPageSize());
+        data.put("keyword", queryParams.getKeyword());
+        data.put("searchType", queryParams.getSearchType());
+        return data;
     }
 
 
