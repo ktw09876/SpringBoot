@@ -14,11 +14,11 @@ import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
-@Configuration
-@PropertySource("classpath:/application.properties")
+@Configuration //Java 기반의 설정 파일임을 명시
+@PropertySource("classpath:/application.properties") //properties 경로
 public class DatabaseConfig {
 
-    @Autowired
+    @Autowired //인스턴스(객체)를 클래스에 주입
     private ApplicationContext context;
 
     @Bean

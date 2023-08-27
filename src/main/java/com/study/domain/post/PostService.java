@@ -10,8 +10,8 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
+@Service //비즈니스 로직 담당
+@RequiredArgsConstructor //클래스 내에 final로 선언된 모든 멤버에 대한 생성자를 만들어준다
 public class PostService {
 
     private final PostMapper postMapper;
@@ -21,7 +21,7 @@ public class PostService {
      * @param params - 게시글 정보
      * @return Generated PK
      */
-    @Transactional
+    @Transactional //자동 Commit 또는 Rollback
     public Long savePost(final PostRequest params) {
         postMapper.save(params);
         return params.getId();
@@ -30,7 +30,7 @@ public class PostService {
     /**
      * 게시글 상세정보 조회
      * @param id - PK
-     * @return 게시글 상세정보
+     * @return 게시글 상세 정보
      */
     public PostResponse findPostById(final Long id) {
         return postMapper.findById(id);

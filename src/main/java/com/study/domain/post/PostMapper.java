@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
+@Mapper //XML Mapper의 SQL중 메서드명과 id가 동일한 쿼리를 실행, XML Mapper의 namespace라는 속성을 통해 연결된다
 public interface PostMapper {
 
     /**
@@ -32,7 +32,7 @@ public interface PostMapper {
 
     /**
      * 게시글 삭제
-     *
+     * 논리삭제(delete_yn = 1)
      * @param id - PK
      */
     void deleteById(Long id);
